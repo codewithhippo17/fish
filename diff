@@ -1,0 +1,50 @@
+diff --git a/aliases.fish b/aliases.fish
+index ac11355..a2389b5 100644
+--- a/aliases.fish
++++ b/aliases.fish
+@@ -182,4 +182,6 @@ function qr --description "Prints QR. E.g. super useful when you need to transfe
+ end
+ 
+ alias sharewifi='qr "WIFI:T:WPA;S:aaa;P:bbb;;"'
+-
++function nrb --description "Shortcut for nixos-rebuild using flake"
++    sudo nixos-rebuild --flake /path/to/flake#isitreal-laptop $argv
++end
+diff --git a/colors.fish b/colors.fish
+index eb300d6..ae6200e 100644
+--- a/colors.fish
++++ b/colors.fish
+@@ -16,4 +16,6 @@ set fish_color_match F8F8F2 # the color used to highlight matching parenthesis
+ set fish_color_search_match --background=49483E # the color used to highlight history search matches
+ set fish_color_operator FD971F # AE81FF # the color for parameter expansion operators like '*' and '~'
+ set fish_color_escape 66D9EF # the color used to highlight character escapes like '\n' and '\x70'
+-set fish_color_cwd 66D9EF # the color used for the current working directory in the default prompt
+\ No newline at end of file
++set fish_color_cwd 66D9EF # the color used for the current working directory in the default prompt
++set -x EDITOR nvim
++set -x VISUAL nvim
+diff --git a/config.fish b/config.fish
+index 757e09d..ffa44ab 100644
+--- a/config.fish
++++ b/config.fish
+@@ -4,9 +4,18 @@
+ 
+ set -q XDG_CONFIG_HOME || set XDG_CONFIG_HOME "$HOME/.config"
+ 
++set -Ux fish_user_paths $HOME/.npm-global/bin $fish_user_paths
++
+ source $XDG_CONFIG_HOME/fish/main.fish
+ source $XDG_CONFIG_HOME/fish/colors.fish
+ source $XDG_CONFIG_HOME/fish/aliases.fish
+ source $XDG_CONFIG_HOME/fish/developer.fish
+ source $XDG_CONFIG_HOME/fish/prompt.fish
+-source $XDG_CONFIG_HOME/fish/web.fish
+\ No newline at end of file
++source $XDG_CONFIG_HOME/fish/web.fish
++# opencode
++fish_add_path /home/_hippo/.opencode/bin
++set -gx PATH ~/.npm-global/bin $PATH
++function pbcpy; fish_clipboard_copy $argv; end
++function pbpst; fish_clipboard_paste $argv; end
++direnv hook fish | source
++set -g direnv_fish_mode disable_arrow 

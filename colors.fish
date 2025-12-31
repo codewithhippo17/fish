@@ -17,3 +17,5 @@ set fish_color_search_match --background=49483E # the color used to highlight hi
 set fish_color_operator FD971F # AE81FF # the color for parameter expansion operators like '*' and '~'
 set fish_color_escape 66D9EF # the color used to highlight character escapes like '\n' and '\x70'
 set fish_color_cwd 66D9EF # the color used for the current working directory in the default prompt
+set -x EDITOR nvim
+set -x VISUAL nvim

@@ -182,4 +182,6 @@ function qr --description "Prints QR. E.g. super useful when you need to transfe
 end
 
 alias sharewifi='qr "WIFI:T:WPA;S:aaa;P:bbb;;"'
-
+function nrb --description "Shortcut for nixos-rebuild using flake"
+    sudo nixos-rebuild --flake /path/to/flake#isitreal-laptop $argv
+end

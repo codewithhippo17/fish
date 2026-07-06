@@ -5,12 +5,12 @@
 #
 #  Author: [Dmitry](http://dmi3.net) [Source](https://github.com/dmi3/fish)
 
-
 #  * Create missing directories in path when calling `mkdir`
 alias mkdir='mkdir -pv'
+alias ls='lsd'
 
 #  * `path` command to print full file path
-alias path='readlink -e'
+alias rpath='readlink -e'
 
 #  * `rmm` command to remove directories, but ask nicely
 alias rmm='rm -rvI'
@@ -62,126 +62,151 @@ alias wget='wget --content-disposition'
 alias unset 'set --erase'
 
 function ll --description "Scroll ll if theres more files that fit on screen"
-  ls -l $argv --color=always | less -R -X -F
+    ls -l $argv --color=always | less -R -X -F
 end
 
 function mkcd --description "Create and cd to directory"
-  mkdir $argv
-  and cd $argv
+    mkdir $argv
+    and cd $argv
 end
 
 function amount --description "Mount archive"
-  /usr/lib/gvfs/gvfsd-archive file=$argv 2>/dev/null &
-  sleep 1
-  cd $XDG_RUNTIME_DIR/gvfs  
-  cd (ls -p | grep / | tail -1) # cd last created dir
+    /usr/lib/gvfs/gvfsd-archive file=$argv 2>/dev/null &
+    sleep 1
+    cd $XDG_RUNTIME_DIR/gvfs
+    cd (ls -p | grep / | tail -1) # cd last created dir
 end
 
 function aumount --description "Unmount all mounted archive (and gvfs locations)"
-  gvfs-mount --unmount $XDG_RUNTIME_DIR/gvfs/*
+    gvfs-mount --unmount $XDG_RUNTIME_DIR/gvfs/*
 end
 
 # Useful for piping, i.e. `cat ~/.ssh/id_rsa.pub | copy` or `uuid | copy`
 # If arguments are given, copies it to clipboard
 function copy --description "Copy pipe or argument"
-  if [ "$argv" = "" ]
-    xclip -sel clip
-  else
-    printf "$argv" | xclip -sel clip
-  end    
+    if [ "$argv" = "" ]
+        xclip -sel clip
+    else
+        printf "$argv" | xclip -sel clip
+    end
 end
 
 function copypath --description "Copy full file path"
-  readlink -e $argv | xclip -sel clip
-  echo "copied to clipboard"
+    readlink -e $argv | xclip -sel clip
+    echo "copied to clipboard"
 end
 
 function color --description "Print color"
-  echo (set_color (string trim -c '#' "$argv"))"██"
+    echo (set_color (string trim -c '#' "$argv"))"██"
 end
 
-function reset_windows --description  "Reset all windows size and bring it to main monitor. Useful if DE messes up in multiple monitor configuration"
-  for f in (wmctrl -l | cut -d' ' -f 1)
-    wmctrl -i -r $f -e 0,0,0,800,600
-    wmctrl -i -a $f
-  end
+function reset_windows --description "Reset all windows size and bring it to main monitor. Useful if DE messes up in multiple monitor configuration"
+    for f in (wmctrl -l | cut -d' ' -f 1)
+        wmctrl -i -r $f -e 0,0,0,800,600
+        wmctrl -i -a $f
+    end
 end
 
 #  * Prepend `sudo` to `nano` command if file is not editable by current user
 #    - Warn if file does no exist
 function nano
-  if not test -e "$argv"
-    read -p "echo 'File $argv does not exist. Ctrl+C to cancel'" -l confirm
-    touch "$argv" 2>/dev/null
-  end
+    if not test -e "$argv"
+        read -p "echo 'File $argv does not exist. Ctrl+C to cancel'" -l confirm
+        touch "$argv" 2>/dev/null
+    end
 
-  if test -w "$argv"    
-    /bin/nano -mui $argv
-  else
-    echo "Editing $argv requires root permission"
-    sudo /bin/nano -mui $argv
-  end
+    if test -w "$argv"
+        /bin/nano -mui $argv
+    else
+        echo "Editing $argv requires root permission"
+        sudo /bin/nano -mui $argv
+    end
 end
 
 function run --description "Make file executable, then run it"
-  chmod +x "$argv"
-  eval "./$argv"
+    chmod +x "$argv"
+    eval "./$argv"
 end
 
 function launch --description "Launch GUI program - hide output and don't close when terminal closes"
-  eval "$argv >/dev/null 2>&1 &" & disown
+    eval "$argv >/dev/null 2>&1 &" & disown
 end
 
 function open --description "Open file by default application in new process"
-  env XDG_CURRENT_DESKTOP=X-Generic xdg-open $argv >/dev/null 2>&1 & disown
+    env XDG_CURRENT_DESKTOP=X-Generic xdg-open $argv >/dev/null 2>&1 & disown
 end
 
 function b --description "Exec command in bash. Useful when copy-pasting commands with imcompatible syntax to fish "
-  bash -c "$argv"
+    bash -c "$argv"
 end
 
 function c --description "Math using Python"
-  python -c "print($argv)"
+    python -c "print($argv)"
 end
 
 #  * If Sublime Text installed - use it instead of Gedit
 if type -q subl
-  alias gedit=subl
+    alias gedit=subl
 end
 
 #  * Show 3 (next and prev) months in `cal`, start week on monday
 #    - Use [nicl](https://github.com/dmi3/nicl) in installed
 if type -q nicl
-  alias cal="nicl -w3 -f ~/git/stuff/documents/bank_days.csv"  
+    alias cal="nicl -w3 -f ~/git/stuff/documents/bank_days.csv"
 else
-  alias cal="ncal -bM3"
+    alias cal="ncal -bM3"
 end
 
 #  * If [sssh2](https://github.com/dmi3/bin/blob/master/sssh2) installed - use it instead of ssh
 if type -q sssh2
-  alias ssh=sssh2
+    alias ssh=sssh2
 end
 
 #  * If [plug](https://github.com/dmi3/bin/blob/master/plug) installed - use it for interactive mount/unmount of USB drives 
 if type -q plug
-  alias unplug='plug -u'
-  alias plug='cd (command plug)'
+    alias unplug='plug -u'
+    alias plug='cd (command plug)'
 end
 
 #  * `icat` Show images in [kitty](https://sw.kovidgoyal.net/kitty/)
 if type -q kitty
-  alias icat="kitty +kitten icat"
+    alias icat="kitty +kitten icat"
 end
 
 function qr --description "Prints QR. E.g. super useful when you need to transfer private key to the phone without intermediaries `cat ~/.ssh/topsecret.pem | qr`"
-  if [ "$argv" = "" ]
-    qrencode --background=00000000 --foreground=FFFFFF -o - | kitty +kitten icat
-  else
-    printf "$argv" | qrencode --background=00000000 --foreground=FFFFFF -o - | kitty +kitten icat
-  end    
+    if [ "$argv" = "" ]
+        qrencode --background=00000000 --foreground=FFFFFF -o - | kitty +kitten icat
+    else
+        printf "$argv" | qrencode --background=00000000 --foreground=FFFFFF -o - | kitty +kitten icat
+    end
 end
 
 alias sharewifi='qr "WIFI:T:WPA;S:aaa;P:bbb;;"'
+
 function nrb --description "Shortcut for nixos-rebuild using flake"
     sudo nixos-rebuild --flake /path/to/flake#isitreal-laptop $argv
+end
+
+# PAI Voice Server — start/stop voice notifications
+function voice-start --description "Start PAI voice server in background"
+    cd ~/.opencode/VoiceServer
+    nohup bun run server.ts >logs/server.log 2>&1 &
+    echo "🎙️ Voice server starting on port 8888 (PID $last_pid)"
+    echo "   Logs: ~/.opencode/VoiceServer/logs/server.log"
+    echo "   Stop: voice-stop"
+end
+
+function voice-stop --description "Stop PAI voice server"
+    kill (lsof -ti :8888) 2>/dev/null
+    and echo "🛑 Voice server stopped"
+    or echo "⚠️  No voice server running on port 8888"
+end
+
+function voice-status --description "Check PAI voice server status"
+    if lsof -i :8888 >/dev/null 2>&1
+        echo "🎙️ Voice server is running on port 8888"
+        curl -s http://localhost:8888/health | python3 -m json.tool 2>/dev/null
+    else
+        echo "⚫ Voice server is not running"
+    end
 end
